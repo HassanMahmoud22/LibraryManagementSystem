@@ -9,7 +9,7 @@ import lombok.Data;
  * This class is used for transferring patron data between the client and the server.
  */
 @Data
-public class PatronDTO {
+public class PatronDTORequest {
 
     @NotBlank(message = "Name mustn't be blank")
     @NotNull(message = "Name mustn't be null")
@@ -30,8 +30,7 @@ public class PatronDTO {
     @Email(message = "Invalid email address")
     private String emailAddress;
 
-
-    public PatronDTO(String name, String phoneNumber, String emailAddress) {
+    public PatronDTORequest(String name, String phoneNumber, String emailAddress) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;

@@ -46,7 +46,7 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testGetBookById_Success() {
+    public void testGetBookByIdSuccess() {
         Book book = new Book(1L, "Title1", "Author1", 2021, "ISBN1");
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
 
@@ -57,14 +57,14 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testGetBookById_NotFound() {
+    public void testGetBookByIdNotFound() {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(BookNotFoundException.class, () -> bookService.getBookById(1L));
     }
 
     @Test
-    public void testAddBook_Success() {
+    public void testAddBookSuccess() {
         Book book = new Book(1L, "Title1", "Author1", 2021, "ISBN1");
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
@@ -75,14 +75,14 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testAddBook_DuplicateISBN() {
+    public void testAddBookDuplicateISBN() {
         when(bookRepository.save(any(Book.class))).thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(BookISBNAlreadyExistsException.class, () -> bookService.addBook(new Book()));
     }
 
     @Test
-    public void testUpdateBook_Success() {
+    public void testUpdateBookSuccess() {
         Book book = new Book(1L, "Title1", "Author1", 2021, "ISBN1");
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class))).thenReturn(book);
@@ -95,14 +95,14 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testUpdateBook_NotFound() {
+    public void testUpdateBookNotFound() {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(BookNotFoundException.class, () -> bookService.updateBook(1L, new Book()));
     }
 
     @Test
-    public void testDeleteBook_Success() {
+    public void testDeleteBookSuccess() {
         Book book = new Book(1L, "Title1", "Author1", 2021, "ISBN1");
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
         doNothing().when(bookRepository).delete(any(Book.class));

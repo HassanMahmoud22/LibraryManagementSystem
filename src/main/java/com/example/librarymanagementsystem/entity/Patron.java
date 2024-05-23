@@ -48,4 +48,9 @@ public class Patron {
         this.emailAddress = emailAddress;
     }
 
+    public Patron(String name, String phoneNumber, String emailAddress) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+    }
 }

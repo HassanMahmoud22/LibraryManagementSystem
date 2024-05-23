@@ -1,9 +1,9 @@
 package com.example.librarymanagementsystem.controller;
 
-import com.example.librarymanagementsystem.dto.BookDTO;
+import com.example.librarymanagementsystem.dto.BookDTORequest;
+import com.example.librarymanagementsystem.dto.BookDTOResponse;
 import com.example.librarymanagementsystem.mapper.BookMapper;
 import com.example.librarymanagementsystem.service.BookService;
-import com.example.librarymanagementsystem.serviceImpl.BookServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,9 +34,9 @@ public class BookController {
      * @return ResponseEntity containing a list of BookDTOs representing all books in the system
      */
     @GetMapping
-    public ResponseEntity<List<BookDTO>> getAllBooks() {
+    public ResponseEntity<List<BookDTOResponse>> getAllBooks() {
         return ResponseEntity.ok().body(bookService.getAllBooks().stream()
-                .map(BookMapper::toBookDTO)
+                .map(BookMapper::toBookDTOResponse)
                 .collect(Collectors.toList()));
     }
 
@@ -44,12 +44,12 @@ public class BookController {
      * Handles GET request to fetch a book by its ID.
      *
      * @param bookId the ID of the book to fetch
-     * @return ResponseEntity containing the BookDTO representing the requested book
+     * @return ResponseEntity containing the BookDTORequest representing the requested book
      */
     @GetMapping("/{id}")
-    public ResponseEntity<BookDTO> getBookById(@PathVariable(value = "id") Long bookId) {
+    public ResponseEntity<BookDTOResponse> getBookById(@PathVariable(value = "id") Long bookId) {
         return ResponseEntity.ok().body(
-                BookMapper.toBookDTO(
+                BookMapper.toBookDTOResponse(
                         bookService.getBookById(bookId)
                 ));
     }
@@ -57,14 +57,14 @@ public class BookController {
     /**
      * Handles POST request to add a new book.
      *
-     * @param bookDTO the BookDTO containing information about the book to add
-     * @return ResponseEntity containing the created BookDTO representing the added book
+     * @param bookDTORequest the BookDTORequest containing information about the book to add
+     * @return ResponseEntity containing the created BookDTORequest representing the added book
      */
-    @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addBook(@RequestBody @Valid BookDTO bookDTO) {
+    @PostMapping
+    public ResponseEntity<?> addBook(@RequestBody @Valid BookDTORequest bookDTORequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                BookMapper.toBookDTO(
-                        bookService.addBook(BookMapper.toBook(bookDTO))
+                BookMapper.toBookDTOResponse(
+                        bookService.addBook(BookMapper.toBook(bookDTORequest))
                 )
         );
     }
@@ -73,15 +73,15 @@ public class BookController {
      * Handles PUT request to update an existing book.
      *
      * @param bookId         the ID of the book to update
-     * @param bookDetailsDTO the BookDTO containing updated information about the book
-     * @return ResponseEntity containing the updated BookDTO representing the updated book
+     * @param bookDetailsDTO the BookDTORequest containing updated information about the book
+     * @return ResponseEntity containing the updated BookDTORequest representing the updated book
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBook(@PathVariable(value = "id") Long bookId,
-                                        @Valid @RequestBody BookDTO bookDetailsDTO) {
+                                        @Valid @RequestBody BookDTORequest bookDetailsDTO) {
 
         return ResponseEntity.ok().body(
-                BookMapper.toBookDTO(
+                BookMapper.toBookDTOResponse(
                         bookService.updateBook(bookId, BookMapper.toBook(bookDetailsDTO))
                 ));
     }

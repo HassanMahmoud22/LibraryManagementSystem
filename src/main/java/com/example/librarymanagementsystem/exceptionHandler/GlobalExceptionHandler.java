@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BookAlreadyBorrowedException.class)
     public ResponseEntity<Map<String, List<String>>> handleBookAlreadyBorrowedException(BookAlreadyBorrowedException ex) {
         List<String> errors = Collections.singletonList(ex.getMessage());
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(BookISBNAlreadyExistsException.class)

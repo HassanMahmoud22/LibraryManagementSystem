@@ -1,6 +1,7 @@
 package com.example.librarymanagementsystem.controller;
 
-import com.example.librarymanagementsystem.dto.PatronDTO;
+import com.example.librarymanagementsystem.dto.PatronDTORequest;
+import com.example.librarymanagementsystem.dto.PatronDTOResponse;
 import com.example.librarymanagementsystem.mapper.PatronMapper;
 import com.example.librarymanagementsystem.service.PatronService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ public class PatronController {
      * @return ResponseEntity containing a list of all patrons
      */
     @GetMapping
-    public ResponseEntity<List<PatronDTO>> getAllPatrons() {
+    public ResponseEntity<List<PatronDTOResponse>> getAllPatrons() {
         return  ResponseEntity.ok().body(patronService.getAllPatrons().stream()
-                .map(PatronMapper::toPatronDTO)
+                .map(PatronMapper::toPatronDTOResponse)
                 .collect(Collectors.toList()));
     }
 
@@ -46,9 +47,9 @@ public class PatronController {
      * @return ResponseEntity containing the patron details
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PatronDTO> getPatronById(@PathVariable(value = "id") Long patronId) {
+    public ResponseEntity<PatronDTOResponse> getPatronById(@PathVariable(value = "id") Long patronId) {
         return ResponseEntity.ok().body(
-                PatronMapper.toPatronDTO(
+                PatronMapper.toPatronDTOResponse(
                         patronService.getPatronById(patronId)
                 ));
     }
@@ -56,14 +57,14 @@ public class PatronController {
     /**
      * Handles POST request to add a new patron.
      *
-     * @param patronDTO the DTO representing the patron to add
+     * @param patronDTORequest the DTO representing the patron to add
      * @return ResponseEntity containing the added patron details
      */
     @PostMapping
-    public ResponseEntity<?> addPatron(@Valid @RequestBody PatronDTO patronDTO) {
+    public ResponseEntity<?> addPatron(@Valid @RequestBody PatronDTORequest patronDTORequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                PatronMapper.toPatronDTO(
-                        patronService.addPatron(PatronMapper.toPatron(patronDTO))
+                PatronMapper.toPatronDTOResponse(
+                        patronService.addPatron(PatronMapper.toPatron(patronDTORequest))
                 ));
     }
 
@@ -71,16 +72,16 @@ public class PatronController {
      * Handles PUT request to update an existing patron.
      *
      * @param patronId  the ID of the patron to update
-     * @param patronDTO the DTO representing the updated patron details
+     * @param patronDTORequest the DTO representing the updated patron details
      * @return ResponseEntity containing the updated patron details
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePatron(@PathVariable(value = "id") Long patronId,
-                                          @Valid @RequestBody PatronDTO patronDTO) {
-        System.out.println(patronDTO.getName());
+                                          @Valid @RequestBody PatronDTORequest patronDTORequest) {
+        System.out.println(patronDTORequest.getName());
         return ResponseEntity.ok().body(
-                PatronMapper.toPatronDTO(
-                        patronService.updatePatron(patronId, PatronMapper.toPatron(patronDTO))
+                PatronMapper.toPatronDTOResponse(
+                        patronService.updatePatron(patronId, PatronMapper.toPatron(patronDTORequest))
                 ));
     }
 

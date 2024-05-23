@@ -1,7 +1,6 @@
 package com.example.librarymanagementsystem.service;
 
 import com.example.librarymanagementsystem.authentication.ApiKeyAuthentication;
-import com.example.librarymanagementsystem.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -33,4 +32,3 @@ public interface AuthenticationService {
         return Optional.of(new ApiKeyAuthentication(apiKey, AuthorityUtils.NO_AUTHORITIES));
     }
 }
-

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Exception indicating that the book is already borrowed when trying to borrow it again.
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.CONFLICT)
 public class BookAlreadyBorrowedException extends RuntimeException {
     /**
      * Constructs a new BookAlreadyBorrowedException with the specified detail message.

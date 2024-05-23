@@ -39,7 +39,7 @@ class BorrowingServiceImplTest {
     }
 
     @Test
-    void testBorrowBook_Success() {
+    void testBorrowBookSuccess() {
         Book book = new Book(1L, "Title1", "Author1", 2000, "1234567890", false);
         Patron patron = new Patron(1L, "Patron1", "1234567890", "patron1@example.com");
 
@@ -53,7 +53,7 @@ class BorrowingServiceImplTest {
     }
 
     @Test
-    void testBorrowBook_AlreadyBorrowed() {
+    void testBorrowBookAlreadyBorrowed() {
         Book book = new Book(1L, "Title1", "Author1", 2000, "1234567890", true);
         when(bookService.getBookById(1L)).thenReturn(book);
 
@@ -61,24 +61,24 @@ class BorrowingServiceImplTest {
     }
 
     @Test
-    void testReturnBook_Success() {
+    void testReturnBookSuccess() {
         Book book = new Book(1L, "Title1", "Author1", 2000, "1234567890", true);
         Patron patron = new Patron(1L, "Patron1", "1234567890", "patron1@example.com");
         BorrowingRecord borrowingRecord = new BorrowingRecord(book, patron);
 
-        when(borrowingRecordRepository.findByBookIdAndPatronIdAndReturnDateIsNull(1L, 1L))
+        when(borrowingRecordRepository.findByBookIdAndPatronIdAndReturnDateTimeIsNull(1L, 1L))
                 .thenReturn(Optional.of(borrowingRecord));
 
         borrowingService.returnBook(1L, 1L);
 
-        assertNotNull(borrowingRecord.getReturnDate());
+        assertNotNull(borrowingRecord.getReturnDateTime());
         assertFalse(book.isBorrowed());
         verify(borrowingRecordRepository, times(1)).save(borrowingRecord);
     }
 
     @Test
-    void testReturnBook_BorrowingRecordNotFound() {
-        when(borrowingRecordRepository.findByBookIdAndPatronIdAndReturnDateIsNull(1L, 1L))
+    void testReturnBookBorrowingRecordNotFound() {
+        when(borrowingRecordRepository.findByBookIdAndPatronIdAndReturnDateTimeIsNull(1L, 1L))
                 .thenReturn(Optional.empty());
 
         assertThrows(BorrowingRecordNotFoundException.class, () -> borrowingService.returnBook(1L, 1L));

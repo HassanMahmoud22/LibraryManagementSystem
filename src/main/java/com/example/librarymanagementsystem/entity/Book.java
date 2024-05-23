@@ -52,8 +52,8 @@ public class Book {
     private String isbn;
 
     @JsonIgnore
-    @Column(name = "borrowed", columnDefinition = "boolean default false")
-    private boolean borrowed;
+    @Column(name = "is_borrowed", columnDefinition = "boolean default false")
+    private boolean isBorrowed;
 
     public Book () {}
 
@@ -64,12 +64,21 @@ public class Book {
         this.publicationYear = publicationYear;
         this.isbn = isbn;
     }
-    public Book(Long id, String title, String author, int publicationYear, String isbn, boolean borrowed) {
+
+    public Book(Long id, String title, String author, int publicationYear, String isbn, boolean isBorrowed) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.publicationYear = publicationYear;
         this.isbn = isbn;
-        this.borrowed = borrowed;
+        this.isBorrowed = isBorrowed;
+    }
+
+    public Book(String title, String author, int publicationYear, String isbn, boolean isBorrowed) {
+        this.title = title;
+        this.author = author;
+        this.publicationYear = publicationYear;
+        this.isbn = isbn;
+        this.isBorrowed = isBorrowed;
     }
 }

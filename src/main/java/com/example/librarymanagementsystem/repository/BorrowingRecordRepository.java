@@ -19,5 +19,5 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
      * @param patronId The ID of the patron.
      * @return An optional BorrowingRecord entity.
      */
-    Optional<BorrowingRecord> findByBookIdAndPatronIdAndReturnDateIsNull(Long bookId, Long patronId);
+    Optional<BorrowingRecord> findByBookIdAndPatronIdAndReturnDateTimeIsNull(Long bookId, Long patronId);
 }

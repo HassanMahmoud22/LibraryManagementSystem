@@ -1,21 +1,23 @@
 package com.example.librarymanagementsystem.mapper;
 
-import com.example.librarymanagementsystem.dto.BookDTO;
+import com.example.librarymanagementsystem.dto.BookDTORequest;
+import com.example.librarymanagementsystem.dto.BookDTOResponse;
 import com.example.librarymanagementsystem.entity.Book;
 
 /**
- * Mapper class to convert between Book and BookDTO objects.
+ * Mapper class to convert between Book and BookDTORequest objects.
  */
 public class BookMapper {
 
     /**
-     * Converts a Book entity to a BookDTO object.
+     * Converts a Book entity to a BookDTOResponse object.
      *
      * @param book The Book entity to be converted.
-     * @return A BookDTO object.
+     * @return A BookDTOResponse object.
      */
-    public static BookDTO toBookDTO(Book book) {
-        return new BookDTO(
+    public static BookDTOResponse toBookDTOResponse(Book book) {
+        return new BookDTOResponse(
+            book.getId(),
             book.getTitle(),
             book.getAuthor(),
             book.getPublicationYear(),
@@ -25,18 +27,18 @@ public class BookMapper {
     }
 
     /**
-     * Converts a BookDTO object to a Book entity.
+     * Converts a BookDTORequest object to a Book entity.
      *
-     * @param bookDTO The BookDTO object to be converted.
+     * @param bookDTORequest The BookDTORequest object to be converted.
      * @return A Book entity.
      */
-    public static Book toBook(BookDTO bookDTO) {
-        Book book = new Book();
-        book.setTitle(bookDTO.getTitle());
-        book.setAuthor(bookDTO.getAuthor());
-        book.setPublicationYear(bookDTO.getPublicationYear());
-        book.setIsbn(bookDTO.getIsbn());
-        book.setBorrowed(bookDTO.isBorrowed());
-        return book;
+    public static Book toBook(BookDTORequest bookDTORequest) {
+        return new Book(
+            bookDTORequest.getTitle(),
+            bookDTORequest.getAuthor(),
+            bookDTORequest.getPublicationYear(),
+            bookDTORequest.getIsbn(),
+            bookDTORequest.isBorrowed()
+        );
     }
 }

@@ -1,6 +1,5 @@
 package com.example.librarymanagementsystem.service;
 
-import com.example.librarymanagementsystem.entity.Book;
 import com.example.librarymanagementsystem.exceptionHandler.BookAlreadyBorrowedException;
 import com.example.librarymanagementsystem.exceptionHandler.BorrowingRecordNotFoundException;
 import com.example.librarymanagementsystem.exceptionHandler.PatronNotFoundException;
@@ -32,4 +31,3 @@ public interface BorrowingService {
      */
     void returnBook(Long bookId, Long patronId);
 }
-

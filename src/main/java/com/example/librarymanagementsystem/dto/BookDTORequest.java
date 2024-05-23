@@ -10,7 +10,7 @@ import jakarta.validation.constraints.*;
  * This class is used for transferring book data between the client and the server.
  */
 @Data
-public class BookDTO {
+public class BookDTORequest {
 
     @NotBlank(message = "Title mustn't be blank")
     @NotNull(message = "Title is required")
@@ -40,13 +40,13 @@ public class BookDTO {
     private String isbn;
 
     @JsonIgnore
-    private boolean borrowed;
+    private boolean isBorrowed;
 
-    public BookDTO(String title, String author, int publicationYear, String isbn, boolean borrowed) {
+    public BookDTORequest(String title, String author, int publicationYear, String isbn, boolean isBorrowed) {
         this.title = title;
         this.author = author;
         this.publicationYear = publicationYear;
         this.isbn = isbn;
-        this.borrowed = borrowed;
+        this.isBorrowed = isBorrowed;
     }
 }

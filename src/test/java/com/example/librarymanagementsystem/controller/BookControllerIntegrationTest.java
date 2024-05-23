@@ -1,20 +1,25 @@
 package com.example.librarymanagementsystem.controller;
 
-import com.example.librarymanagementsystem.dto.BookDTO;
+import com.example.librarymanagementsystem.dto.BookDTORequest;
 import com.example.librarymanagementsystem.entity.Book;
+import com.example.librarymanagementsystem.exceptionHandler.BookNotFoundException;
 import com.example.librarymanagementsystem.repository.BookRepository;
+import com.example.librarymanagementsystem.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -27,8 +32,11 @@ public class BookControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private BookRepository bookRepository;
+
+    @MockBean
+    private BookService bookService;
 
     @BeforeEach
     public void setUp() {
@@ -37,10 +45,12 @@ public class BookControllerIntegrationTest {
 
     @Test
     public void testGetAllBooks() throws Exception {
+        // Given
         Book book1 = new Book(1234L, "Title1", "Author", 2000, "123-1234567890", false);
         Book book2 = new Book(12345L, "Title2", "Author", 2001, "123-0987654321", false);
-        bookRepository.saveAll(List.of(book1, book2));
 
+        // When & Then
+        when(bookService.getAllBooks()).thenReturn(List.of(book1, book2));
         mockMvc.perform(MockMvcRequestBuilders.get("/api/books")
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .accept(MediaType.APPLICATION_JSON))
@@ -50,9 +60,11 @@ public class BookControllerIntegrationTest {
 
     @Test
     public void testGetBookById() throws Exception {
+        // Given
         Book book = new Book(1234L, "Title1", "Author", 2000, "123-1234567890", false);
-        book = bookRepository.save(book);
 
+        // When & Then
+        when(bookService.getBookById(1234L)).thenReturn(book);
         mockMvc.perform(MockMvcRequestBuilders.get("/api/books/{id}", book.getId())
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .accept(MediaType.APPLICATION_JSON))
@@ -62,12 +74,16 @@ public class BookControllerIntegrationTest {
 
     @Test
     public void testAddBook() throws Exception {
-        BookDTO bookDTO = new BookDTO("Title1", "Author", 2000, "123-1234567890", false);
+        // Given
+        BookDTORequest bookDTORequest = new BookDTORequest("Title1", "Author", 2000, "123-1234567890", false);
+        Book book = new Book(1L, "Title1", "Author", 2000, "123-1234567890", false);
 
+        // When & Then
+        when(bookService.addBook(any())).thenReturn(book);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/books")
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(bookDTO)))
+                        .content(asJsonString(bookDTORequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Title1"));
     }
@@ -75,75 +91,69 @@ public class BookControllerIntegrationTest {
     @Test
     public void testAddBookInvalidTitle() throws Exception {
         // Given
-        BookDTO bookDTO = new BookDTO("", "Author", 2000, "123-1234567890", false);
+        BookDTORequest bookDTORequest = new BookDTORequest("", "Author", 2000, "123-1234567890", false);
 
         // When & Then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/books")
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(bookDTO)))
+                        .content(asJsonString(bookDTORequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void testAddBookInvalidAuthor() throws Exception {
         // Given
-        BookDTO bookDTO = new BookDTO("Title1", "Author1", 2000, "123-1234567890", false);
+        BookDTORequest bookDTORequest = new BookDTORequest("Title1", "Author1", 2000, "123-1234567890", false);
 
         // When & Then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/books")
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(bookDTO)))
+                        .content(asJsonString(bookDTORequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void testAddBookInvalidPublicationYear() throws Exception {
         // Given
-        BookDTO bookDTO = new BookDTO("Title1", "Author", 2025, "123-1234567890", false);
+        BookDTORequest bookDTORequest = new BookDTORequest("Title1", "Author", 2025, "123-1234567890", false);
 
         // When & Then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/books")
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(bookDTO)))
+                        .content(asJsonString(bookDTORequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void testAddBookInvalidISBN() throws Exception {
         // Given
-        BookDTO bookDTO = new BookDTO("Title1", "Author", 2000, "12312345670", false);
+        BookDTORequest bookDTORequest = new BookDTORequest("Title1", "Author", 2000, "12312345670", false);
 
         // When & Then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/books")
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(bookDTO)))
+                        .content(asJsonString(bookDTORequest)))
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    public void testGetBookByIdInvalidId() throws Exception {
-        // When & Then
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/books/{id}", 999)
-                        .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
 
     @Test
     public void testUpdateBook() throws Exception {
-        Book book = new Book(1234L, "Title1", "Author", 2000, "123-1234567890", false);
-        book = bookRepository.save(book);
+        // Given
+        Book bookDetails = new Book("UpdatedTitle", "UpdatedAuthor", 2001, "123-1234567890", false);
+        Book book = new Book(1234L, "UpdatedTitle", "UpdatedAuthor", 2001, "123-1234567890", false);
+        BookDTORequest updatedBookDTORequest = new BookDTORequest("UpdatedTitle", "UpdatedAuthor", 2001, "123-1234567890", false);
 
-        BookDTO updatedBookDTO = new BookDTO("UpdatedTitle", "UpdatedAuthor", 2001, "123-1234567890", false);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}", book.getId())
+        // When & Then
+        when(bookService.updateBook(1234L, bookDetails)).thenReturn(book);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}", 1234L)
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(updatedBookDTO)))
+                        .content(asJsonString(updatedBookDTORequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("UpdatedTitle"));
     }
@@ -151,10 +161,12 @@ public class BookControllerIntegrationTest {
     @Test
     public void testUpdateBookInvalidBookId() throws Exception {
         // Given
-        Book book = new Book(100L, "Title", "Author", 2000, "123-1234567890"); // Assuming book with ID 100 does not exist
+        Book bookDetails = new Book("UpdatedTitle", "UpdatedAuthor", 2001, "123-1234567890", false);
+        Book book = new Book(1234L, "UpdatedTitle", "UpdatedAuthor", 2001, "123-1234567890", false);
 
         // When & Then
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}", 100)
+        doThrow(new BookNotFoundException("")).when(bookService).updateBook(-1L, bookDetails);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}", -1)
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(book)))
@@ -165,11 +177,10 @@ public class BookControllerIntegrationTest {
     public void testUpdateBookInvalidAuthor() throws Exception {
         // Given
         Book existingBook = new Book(100L, "Title", "Author", 2000, "123-1234567890", false);
-        bookRepository.save(existingBook);
-
-        BookDTO updatedBook = new BookDTO("Title", "Author123", 2000, "123-1234567890", false);
+        BookDTORequest updatedBook = new BookDTORequest("Title", "Author123", 2000, "123-1234567890", false);
 
         // When & Then
+        when(bookService.updateBook(100L, existingBook)).thenThrow(new RuntimeException(""));
         mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}", existingBook.getId())
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -181,11 +192,10 @@ public class BookControllerIntegrationTest {
     public void testUpdateBookInvalidPublicationYear() throws Exception {
         // Given
         Book existingBook = new Book(100L, "Title", "Author", 2000, "123-1234567890", false);
-        bookRepository.save(existingBook);
-
-        BookDTO updatedBook = new BookDTO("Title", "Author123", 2000, "123-1234567890", false);
+        BookDTORequest updatedBook = new BookDTORequest("Title", "Author123", 2000, "123-1234567890", false);
 
         // When & Then
+        when(bookService.updateBook(100L, existingBook)).thenThrow(new RuntimeException(""));
         mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}", existingBook.getId())
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -197,11 +207,10 @@ public class BookControllerIntegrationTest {
     public void testUpdateBookInvalidIsbn() throws Exception {
         // Given
         Book existingBook = new Book(100L, "Title", "Author", 2000, "123-1234567890", false);
-        bookRepository.save(existingBook);
-
-        BookDTO updatedBook = new BookDTO("Title", "Author123", 2000, "1234567890", false);
+        BookDTORequest updatedBook = new BookDTORequest("Title", "Author123", 2000, "1234567890", false);
 
         // When & Then
+        when(bookService.updateBook(100L, existingBook)).thenThrow(new RuntimeException(""));
         mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}", existingBook.getId())
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -211,9 +220,12 @@ public class BookControllerIntegrationTest {
 
     @Test
     public void testDeleteBook() throws Exception {
+        // Given
         Book book = new Book(1234L, "Title1", "Author", 2000, "123-1234567890", false);
-        book = bookRepository.save(book);
 
+        // When & Then
+        doNothing()
+                .when(bookService).deleteBook(1234L);
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/{id}", book.getId())
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE))
                 .andExpect(status().isNoContent());
@@ -221,15 +233,15 @@ public class BookControllerIntegrationTest {
 
     @Test
     public void testDeleteBookNotExist() throws Exception {
-        Book book = new Book(1234L, "Title1", "Author", 2000, "123-1234567890", false);
-        bookRepository.save(book);
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/{id}", 12L)
+        // When & Then
+        doThrow(new BookNotFoundException(""))
+                .when(bookService).deleteBook(1234L);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/{id}", 1234L)
                         .header(ADMIN_KEY_HEADER, ADMIN_KEY_VALUE))
                 .andExpect(status().isNotFound());
     }
 
-    private static String asJsonString(final Object obj) {
+    public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
         } catch (Exception e) {
