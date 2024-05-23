@@ -1,55 +1,40 @@
 package com.example.librarymanagementsystem.configuration;
 
+import com.example.librarymanagementsystem.authentication.AuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.Arrays;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-//this configuration class to allow http methods to can send request to the api because it was unauthorized by default
+/**
+ * Configuration class for Spring Security.
+ * This class configures security settings for the application, including authentication and authorization.
+ */
 @Configuration
-@EnableMethodSecurity
+@EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http the HttpSecurity object to configure security settings
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs while configuring security settings
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
-                )
-                .headers(headers -> headers.disable())
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")));
-        http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/**")).permitAll()
-                )
-                .headers(headers -> headers.disable())
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/**")));
-
-        /*http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/drones/**")).permitAll()
-                )
-                .headers(headers -> headers.frameOptions().disable())
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/drones/**")));*/
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests.requestMatchers("/**").authenticated()) // Require authentication for all requests
+                .httpBasic(Customizer.withDefaults()) // Use HTTP Basic authentication
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Set session creation policy to STATELESS
+                .addFilterBefore(new AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // Add custom authentication filter before UsernamePasswordAuthenticationFilter
         return http.build();
     }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 }
-

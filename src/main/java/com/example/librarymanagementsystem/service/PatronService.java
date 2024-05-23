@@ -1,58 +1,52 @@
 package com.example.librarymanagementsystem.service;
 
-import com.example.librarymanagementsystem.entity.Book;
 import com.example.librarymanagementsystem.entity.Patron;
-import com.example.librarymanagementsystem.exceptionHandler.PatronNotFoundException;
-import com.example.librarymanagementsystem.repository.PatronRepository;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
+/**
+ * Interface for managing patrons.
+ */
 @Service
-public class PatronService {
+public interface PatronService {
 
-    private final PatronRepository patronRepository;
+    /**
+     * Retrieve all patrons.
+     *
+     * @return List of patrons.
+     */
+    List<Patron> getAllPatrons();
 
-    @Autowired
-    public PatronService(PatronRepository patronRepository) {
-        this.patronRepository = patronRepository;
-    }
+    /**
+     * Retrieve a patron by ID.
+     *
+     * @param id The ID of the patron to retrieve.
+     * @return The patron with the specified ID.
+     */
+    Patron getPatronById(Long id);
 
-    public List<Patron> getAllPatrons() {
-        return patronRepository.findAll();
-    }
+    /**
+     * Add a new patron.
+     *
+     * @param patron The patron to add.
+     * @return The added patron.
+     */
+    Patron addPatron(Patron patron);
 
-    @Cacheable (value = "patrons", key = "#id")
-    public Patron getPatronById(Long id) {
-        return getPatronEntityById(id);
-    }
+    /**
+     * Update details of an existing patron.
+     *
+     * @param id            The ID of the patron to update.
+     * @param patronDetails Details of the patron to update.
+     * @return The updated patron.
+     */
+    Patron updatePatron(Long id, Patron patronDetails);
 
-    public Patron addPatron(Patron patron) {
-        return patronRepository.save(patron);
-    }
-
-    public Patron updatePatron(Long id, Patron patronDetails) {
-        Patron patron = getPatronById(id);
-        updatePatronDetails(patron, patronDetails);
-        return patronRepository.save(patron);
-    }
-
-    private void updatePatronDetails(Patron patron, Patron patronDetails) {
-       patron.setName(patronDetails.getName());
-       patron.setPhoneNumber(patronDetails.getPhoneNumber());
-       patron.setEmailAddress(patron.getEmailAddress());
-    }
-
-    public void deletePatron(Long id) {
-        Patron patron = getPatronEntityById(id);
-        patronRepository.delete(patron);
-    }
-
-    private Patron getPatronEntityById(Long id) {
-        return patronRepository.findById(id)
-                .orElseThrow(() -> new PatronNotFoundException("Patron not found with id: " + id));
-    }
+    /**
+     * Delete a patron by ID.
+     *
+     * @param id The ID of the patron to delete.
+     */
+    void deletePatron(Long id);
 }

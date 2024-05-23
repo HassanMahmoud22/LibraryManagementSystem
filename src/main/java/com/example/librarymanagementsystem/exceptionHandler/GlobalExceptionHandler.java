@@ -56,25 +56,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
-
-    /**
-     * handles General Exceptions
-     *
-     * @param ex    The General Exception
-     * @return      Response Entity with Internal server error code and Map of Errors
-     */
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Map<String, List<String>>> handleGeneralExceptions(Exception ex) {
         List<String> errors = Collections.singletonList(ex.getMessage());
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * handles RunTime Exceptions
-     *
-     * @param ex    The RunTime Exception
-     * @return      Response Entity with Internal server error code and Map of Errors
-     */
     @ExceptionHandler(RuntimeException.class)
     public final ResponseEntity<Map<String, List<String>>> handleRuntimeExceptions(RuntimeException ex) {
         List<String> errors = Collections.singletonList(ex.getMessage());

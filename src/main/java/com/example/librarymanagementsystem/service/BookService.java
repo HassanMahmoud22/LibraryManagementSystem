@@ -3,60 +3,54 @@ package com.example.librarymanagementsystem.service;
 import com.example.librarymanagementsystem.entity.Book;
 import com.example.librarymanagementsystem.exceptionHandler.BookISBNAlreadyExistsException;
 import com.example.librarymanagementsystem.exceptionHandler.BookNotFoundException;
-import com.example.librarymanagementsystem.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
+
 import java.util.List;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.CacheEvict;
 
-@Service
-public class BookService {
+/**
+ * Interface for managing books.
+ */
+public interface BookService {
 
-    private final BookRepository bookRepository;
+    /**
+     * Retrieves all books from the repository.
+     *
+     * @return List of all books.
+     */
+    List<Book> getAllBooks();
 
-    @Autowired
-    public BookService(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+    /**
+     * Retrieves a book by its ID.
+     *
+     * @param id The ID of the book to retrieve.
+     * @return The book with the specified ID.
+     * @throws BookNotFoundException If the book with the given ID does not exist.
+     */
+    Book getBookById(Long id);
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
-    }
+    /**
+     * Adds a new book to the repository.
+     *
+     * @param book The book to add.
+     * @return The added book.
+     * @throws BookISBNAlreadyExistsException If the ISBN of the book already exists in the repository.
+     */
+    Book addBook(Book book);
 
-    @Cacheable (value = "books", key = "#id")
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
-    }
+    /**
+     * Updates the details of an existing book.
+     *
+     * @param id          The ID of the book to update.
+     * @param bookDetails The updated details of the book.
+     * @return The updated book.
+     * @throws BookNotFoundException If the book with the given ID does not exist.
+     */
+    Book updateBook(Long id, Book bookDetails);
 
-    public Book addBook(Book book) {
-        try {
-            return bookRepository.save(book);
-        } catch (DataIntegrityViolationException e) {
-            throw new BookISBNAlreadyExistsException("Book ISBN Already Exists");
-        }
-    }
-
-    @CachePut(value = "books", key = "#id")
-    public Book updateBook(Long id, Book bookDetails) {
-        Book book = getBookById(id);
-        updateBookDetails(book, bookDetails);
-        return bookRepository.save(book);
-    }
-
-    private void updateBookDetails(Book book, Book bookDetails) {
-        book.setTitle(bookDetails.getTitle());
-        book.setAuthor(bookDetails.getAuthor());
-        book.setPublicationYear(bookDetails.getPublicationYear());
-        book.setIsbn(bookDetails.getIsbn());
-    }
-
-    @CacheEvict(value = "books", key = "#id")
-    public void deleteBook(Long id) {
-        Book book = getBookById(id);
-        bookRepository.delete(book);
-    }
+    /**
+     * Deletes a book from the repository.
+     *
+     * @param id The ID of the book to delete.
+     * @throws BookNotFoundException If the book with the given ID does not exist.
+     */
+    void deleteBook(Long id);
 }

@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
+/**
+ * Entity class representing a borrowing record in the library management system.
+ */
 @Entity
 @Data
 public class BorrowingRecord {
@@ -20,7 +23,18 @@ public class BorrowingRecord {
 
     private LocalDate borrowDate;
     private LocalDate returnDate;
+
+    /**
+     * Default constructor.
+     */
     public BorrowingRecord() {}
+
+    /**
+     * Constructor with parameters.
+     *
+     * @param book   The book being borrowed.
+     * @param patron The patron borrowing the book.
+     */
     public BorrowingRecord(Book book, Patron patron) {
         this.book = book;
         this.patron = patron;

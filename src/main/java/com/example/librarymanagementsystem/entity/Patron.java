@@ -7,6 +7,9 @@ import lombok.*;
 
 import java.util.Set;
 
+/**
+ * Entity class representing a patron in the library management system.
+ */
 @Entity
 @Data
 public class Patron {
@@ -15,24 +18,34 @@ public class Patron {
     private Long id;
 
     @NotBlank(message = "name mustn't be blank")
-    @NotNull (message = "name mustn't be null")
-    @JsonProperty (required = true)
-    @NotEmpty (message = "name mustn't be empty")
-    @Pattern (regexp = "^[a-zA-Z\\s]+$", message = "Only letters and spaces are allowed for name")
+    @NotNull(message = "name mustn't be null")
+    @JsonProperty(required = true)
+    @NotEmpty(message = "name mustn't be empty")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Only letters and spaces are allowed for name")
     private String name;
 
     @NotBlank(message = "phoneNumber mustn't be blank")
-    @NotNull (message = "phoneNumber mustn't be null")
-    @JsonProperty (required = true)
-    @NotEmpty (message = "phoneNumber mustn't be empty")
-    @Pattern (regexp="\\d{10}", message="Phone number must be 10 digits")
+    @NotNull(message = "phoneNumber mustn't be null")
+    @JsonProperty(required = true)
+    @NotEmpty(message = "phoneNumber mustn't be empty")
+    @Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
     private String phoneNumber;
 
     @NotBlank(message = "emailAddress mustn't be blank")
-    @NotNull (message = "emailAddress mustn't be null")
+    @NotNull(message = "emailAddress mustn't be null")
     @Email
     private String emailAddress;
 
     @OneToMany(mappedBy = "patron", cascade = CascadeType.ALL)
     private Set<BorrowingRecord> borrowingRecords;
+
+    public Patron() {}
+
+    public Patron(Long id, String name, String phoneNumber, String emailAddress) {
+        this.id = id;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+    }
+
 }

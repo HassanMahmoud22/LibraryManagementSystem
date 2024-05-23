@@ -4,24 +4,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+/**
+ * Data Transfer Object (DTO) representing a patron (library user).
+ * This class is used for transferring patron data between the client and the server.
+ */
 @Data
 public class PatronDTO {
-    @NotBlank(message = "name mustn't be blank")
-    @NotNull (message = "name mustn't be null")
-    @JsonProperty (required = true)
-    @NotEmpty (message = "name mustn't be empty")
-    @Pattern (regexp = "^[a-zA-Z\\s]+$", message = "Only letters and spaces are allowed for name")
+
+    @NotBlank(message = "Name mustn't be blank")
+    @NotNull(message = "Name mustn't be null")
+    @JsonProperty(required = true)
+    @NotEmpty(message = "Name mustn't be empty")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Only letters and spaces are allowed for name")
     private String name;
 
-    @NotBlank(message = "phoneNumber mustn't be blank")
-    @NotNull (message = "phoneNumber mustn't be null")
-    @JsonProperty (required = true)
-    @NotEmpty (message = "phoneNumber mustn't be empty")
-    @Pattern (regexp="\\d{10}", message="Phone number must be 10 digits")
+    @NotBlank(message = "Phone number mustn't be blank")
+    @NotNull(message = "Phone number mustn't be null")
+    @JsonProperty(required = true)
+    @NotEmpty(message = "Phone number mustn't be empty")
+    @Pattern(regexp="\\d{10}", message="Phone number must be 10 digits")
     private String phoneNumber;
 
-    @NotBlank(message = "emailAddress mustn't be blank")
-    @NotNull (message = "emailAddress mustn't be null")
-    @Email
+    @NotBlank(message = "Email address mustn't be blank")
+    @NotNull(message = "Email address mustn't be null")
+    @Email(message = "Invalid email address")
     private String emailAddress;
+
+
+    public PatronDTO(String name, String phoneNumber, String emailAddress) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+    }
 }
